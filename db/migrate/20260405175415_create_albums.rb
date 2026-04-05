@@ -3,7 +3,7 @@ class CreateAlbums < ActiveRecord::Migration[8.1]
     create_table :albums do |t|
       t.string :title
       t.text :description
-      t.integer :status
+      t.integer :status, null: false
       t.datetime :published_at
 
       t.timestamps

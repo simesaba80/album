@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  caption: MyString
+  display_order: 1
+  shot_at: 2026-04-06 03:12:58
+
+two:
+  caption: MyString
+  display_order: 1
+  shot_at: 2026-04-06 03:12:58
