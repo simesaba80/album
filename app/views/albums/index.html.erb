@@ -1,16 +1,31 @@
-<h1>Albums#index</h1>
-<p>Find me in app/views/albums/index.html.erb</p>
-<%= link_to "New Album", new_album_path %>
-
-<div id="albums">
-    <% @albums.each do |album| %>
-        <div class="album">
-            <%= link_to album_path(album) do %>
-                <% if album.cover_image.attached? %>
-                    <%= image_tag album.cover_image, class: "album-cover" %>
-                <% end %>
-                <%= album.title %>
-            <% end %>
-        </div>
-    <% end %>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h1 style="margin: 0;">Albums</h1>
+  <%= link_to "New Album", new_album_path, style: "padding: 8px 12px; border-radius: 8px; background: #111827; color: #ffffff; text-decoration: none;" %>
 </div>
+
+<% if @albums.any? %>
+  <div id="albums" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">
+    <% @albums.each do |album| %>
+      <%= link_to album_path(album), style: "text-decoration: none; color: inherit;" do %>
+        <article style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background: #ffffff;">
+          <% if album.cover_image.attached? %>
+            <%= image_tag album.cover_image, style: "width: 100%; height: 160px; object-fit: cover; display: block;" %>
+          <% else %>
+            <div style="height: 160px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; color: #6b7280;">
+              No cover image
+            </div>
+          <% end %>
+
+          <div style="padding: 10px 12px;">
+            <p style="margin: 0; font-weight: 600;"><%= album.title.presence || "Untitled Album" %></p>
+            <p style="margin: 6px 0 0; font-size: 12px; color: #6b7280;">
+              <%= album.status.humanize %>
+            </p>
+          </div>
+        </article>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <p style="color: #6b7280;">No albums yet. Create your first album.</p>
+<% end %>
