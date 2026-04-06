@@ -1,29 +1,55 @@
 <h1>New Album</h1>
 
 <%= form_with model: @album do |form| %>
-    <div>
-        <%= form.label :title %>
-        <%= form.text_field :title %>
+  <div>
+    <%= form.label :title %>
+    <%= form.text_field :title %>
+  </div>
+  <div>
+    <%= form.label :cover_image, style: "display: block" %>
+    <%= form.file_field :cover_image, accept: "image/*" %>
+  </div>
+  <div>
+    <%= form.label :photo_images, "Photos", style: "display: block" %>
+    <div id="photo-inputs" style="display: grid; gap: 8px;">
+      <%= file_field_tag "album[photo_images][]", accept: "image/*" %>
     </div>
-    <div>
-        <%= form.label :cover_image, style: "display: block" %>
-        <%= form.file_field :cover_image, accept: "image/*" %>
-    </div>
-    <div>
-        <%= form.label :photo_images, "Photos", style: "display: block" %>
-        <%= file_field_tag "album[photo_images][]", type: "file", multiple: true, accept: "image/*" %>
-    </div>
-    <div>
-        <%= form.label :description %>
-        <%= form.text_area :description %>
-    </div>
-    <div>
-        <%= form.label :status %>
-        <%= form.select :status, Album.statuses.keys.map { |status| [status.humanize, status] } %>
-    </div>
-    <div>
-        <%= form.submit "Create Album" %>
-    </div>
+    <button type="button" id="add-photo-input" style="margin-top: 8px;">
+      Add photo
+    </button>
+  </div>
+  <div>
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+  <div>
+    <%= form.label :status %>
+    <%= form.select :status, Album.statuses.keys.map { |status| [status.humanize, status] } %>
+  </div>
+  <div>
+    <%= form.submit "Create Album" %>
+  </div>
 <% end %>
+
+<template id="photo-input-template">
+  <input type="file" name="album[photo_images][]" accept="image/*">
+</template>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    const addButton = document.getElementById("add-photo-input");
+    const photoInputs = document.getElementById("photo-inputs");
+    const template = document.getElementById("photo-input-template");
+
+    if (!addButton || !photoInputs || !template || addButton.dataset.bound === "true") {
+      return;
+    }
+
+    addButton.dataset.bound = "true";
+    addButton.addEventListener("click", function () {
+      photoInputs.appendChild(template.content.firstElementChild.cloneNode(true));
+    });
+  });
+</script>
 
 <%= link_to "Back to Albums", albums_path %>
