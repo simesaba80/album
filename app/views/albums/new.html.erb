@@ -1,0 +1,25 @@
+<h1>New Album</h1>
+
+<%= form_with model: @album do |form| %>
+    <div>
+        <%= form.label :title %>
+        <%= form.text_field :title %>
+    </div>
+    <div>
+        <%= form.label :cover_image, style: "display: block" %>
+        <%= form.file_field :cover_image, accept: "image/*" %>
+    </div>
+    <div>
+        <%= form.label :description %>
+        <%= form.text_area :description %>
+    </div>
+    <div>
+        <%= form.label :status %>
+        <%= form.select :status, Album.statuses.keys.map { |status| [status.humanize, status] } %>
+    </div>
+    <div>
+        <%= form.submit "Create Album" %>
+    </div>
+<% end %>
+
+<%= link_to "Back to Albums", albums_path %>
