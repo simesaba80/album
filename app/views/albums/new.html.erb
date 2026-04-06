@@ -11,12 +11,20 @@
   </div>
   <div>
     <%= form.label :photo_images, "Photos", style: "display: block" %>
-    <div id="photo-inputs" style="display: grid; gap: 8px;">
-      <%= file_field_tag "album[photo_images][]", accept: "image/*" %>
+    <div data-controller="photo-inputs">
+      <div data-photo-inputs-target="list" style="display: grid; gap: 8px;"></div>
+      <template data-photo-inputs-target="template">
+        <div data-photo-inputs-row style="display: flex; gap: 8px; align-items: center;">
+          <input
+            type="file"
+            name="album[photo_images][]"
+            accept="image/*"
+            data-action="change->photo-inputs#onFileChange"
+          >
+          <button type="button" data-action="photo-inputs#removeRow">Remove</button>
+        </div>
+      </template>
     </div>
-    <button type="button" id="add-photo-input" style="margin-top: 8px;">
-      Add photo
-    </button>
   </div>
   <div>
     <%= form.label :description %>
@@ -30,26 +38,5 @@
     <%= form.submit "Create Album" %>
   </div>
 <% end %>
-
-<template id="photo-input-template">
-  <input type="file" name="album[photo_images][]" accept="image/*">
-</template>
-
-<script>
-  document.addEventListener("turbo:load", function () {
-    const addButton = document.getElementById("add-photo-input");
-    const photoInputs = document.getElementById("photo-inputs");
-    const template = document.getElementById("photo-input-template");
-
-    if (!addButton || !photoInputs || !template || addButton.dataset.bound === "true") {
-      return;
-    }
-
-    addButton.dataset.bound = "true";
-    addButton.addEventListener("click", function () {
-      photoInputs.appendChild(template.content.firstElementChild.cloneNode(true));
-    });
-  });
-</script>
 
 <%= link_to "Back to Albums", albums_path %>
