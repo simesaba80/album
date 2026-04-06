@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_05_181258) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_06_085715) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -50,11 +50,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_181258) do
   end
 
   create_table "photos", force: :cascade do |t|
+    t.integer "album_id", null: false
     t.string "caption"
     t.datetime "created_at", null: false
     t.integer "display_order", default: 0
     t.datetime "shot_at"
     t.datetime "updated_at", null: false
+    t.index ["album_id"], name: "index_photos_on_album_id"
     t.index ["display_order"], name: "index_photos_on_display_order"
   end
 
@@ -77,5 +79,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_181258) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "photos", "albums"
   add_foreign_key "sessions", "users"
 end
