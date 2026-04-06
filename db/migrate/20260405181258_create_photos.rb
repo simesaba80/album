@@ -7,7 +7,7 @@ class CreatePhotos < ActiveRecord::Migration[8.1]
 
       t.timestamps
 
-      add_index :photos, :display_order
+      t.index :display_order
     end
   end
 end

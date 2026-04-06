@@ -8,7 +8,7 @@ class CreateAlbums < ActiveRecord::Migration[8.1]
 
       t.timestamps
 
-      add_index :albums, :status
+      t.index :status
     end
   end
 end
