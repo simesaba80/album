@@ -10,6 +10,10 @@
         <%= form.file_field :cover_image, accept: "image/*" %>
     </div>
     <div>
+        <%= form.label :photo_images, "Photos", style: "display: block" %>
+        <%= file_field_tag "album[photo_images][]", type: "file", multiple: true, accept: "image/*" %>
+    </div>
+    <div>
         <%= form.label :description %>
         <%= form.text_area :description %>
     </div>
