@@ -1,11 +1,13 @@
 <h1><%= @album.title %></h1>
 
-<div style="display: flex; gap: 12px; flex-wrap: wrap;">
+<div class="photos-grid">
   <% @album.photos.each do |photo| %>
     <% next unless photo.image.attached? %>
 
-    <%= image_tag photo.image, style: "width: 200px; height: 200px; object-fit: cover;" %>
+    <%= image_tag photo.image, class: "photo-thumb" %>
   <% end %>
 </div>
 
-<%= link_to "Back to Albums", albums_path %>
+<div class="back-link">
+  <%= link_to "Back to Albums", albums_path, class: "btn" %>
+</div>

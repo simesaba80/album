@@ -8,3 +8,152 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+body {
+  margin: 24px;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  margin: 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #111827;
+  background: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  color: #ffffff;
+  background: #111827;
+  border-color: #111827;
+}
+
+.btn-danger {
+  color: #b91c1c;
+  background: #ffffff;
+  border-color: #fecaca;
+}
+
+.form-section {
+  margin-bottom: 14px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.text-input,
+.text-area,
+.select-input,
+.file-input {
+  width: 100%;
+  max-width: 560px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.text-area {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.photo-list {
+  display: grid;
+  gap: 8px;
+  max-width: 560px;
+}
+
+.photo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-link {
+  margin-top: 12px;
+}
+
+.albums-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.album-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.album-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.album-cover {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.album-empty-cover {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.album-card-body {
+  padding: 10px 12px;
+}
+
+.album-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.album-meta {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.empty-message {
+  color: #6b7280;
+}
+
+.photos-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.photo-thumb {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
