@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_04_124519) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_06_085715) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -39,6 +39,46 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_04_124519) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "albums", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.datetime "published_at"
+    t.integer "status", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_albums_on_status"
+  end
+
+  create_table "photos", force: :cascade do |t|
+    t.integer "album_id", null: false
+    t.string "caption"
+    t.datetime "created_at", null: false
+    t.integer "display_order", default: 0
+    t.datetime "shot_at"
+    t.datetime "updated_at", null: false
+    t.index ["album_id"], name: "index_photos_on_album_id"
+    t.index ["display_order"], name: "index_photos_on_display_order"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "photos", "albums"
+  add_foreign_key "sessions", "users"
 end

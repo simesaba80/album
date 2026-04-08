@@ -1,0 +1,45 @@
+<h1>New Album</h1>
+
+<%= form_with model: @album do |form| %>
+  <div class="form-section">
+    <%= form.label :title, class: "form-label" %>
+    <%= form.text_field :title, class: "text-input" %>
+  </div>
+  <div class="form-section">
+    <%= form.label :cover_image, class: "form-label" %>
+    <%= form.file_field :cover_image, accept: "image/*", class: "file-input" %>
+  </div>
+  <div class="form-section">
+    <%= form.label :photo_images, "Photos", class: "form-label" %>
+    <div data-controller="photo-inputs">
+      <div data-photo-inputs-target="list" class="photo-list"></div>
+      <template data-photo-inputs-target="template">
+        <div data-photo-inputs-row class="photo-row">
+          <input
+            type="file"
+            name="album[photo_images][]"
+            accept="image/*"
+            class="file-input"
+            data-action="change->photo-inputs#onFileChange"
+          >
+          <button type="button" class="btn btn-danger" data-action="photo-inputs#removeRow">Remove</button>
+        </div>
+      </template>
+    </div>
+  </div>
+  <div class="form-section">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.text_area :description, class: "text-area" %>
+  </div>
+  <div class="form-section">
+    <%= form.label :status, class: "form-label" %>
+    <%= form.select :status, Album.statuses.keys.map { |status| [status.humanize, status] }, {}, class: "select-input" %>
+  </div>
+  <div class="form-section">
+    <%= form.submit "Create Album", class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+<div class="back-link">
+  <%= link_to "Back to Albums", albums_path, class: "btn" %>
+</div>
