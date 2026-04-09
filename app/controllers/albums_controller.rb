@@ -11,12 +11,6 @@ class AlbumsController < ApplicationController
     render json: @album
   end
 
-  def new
-    @album = Album.new
-
-    render json: @album
-  end
-
   def create
     @album = Album.new(album_params)
     @album.published_at = Time.current
