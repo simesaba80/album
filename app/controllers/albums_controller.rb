@@ -1,22 +1,29 @@
 class AlbumsController < ApplicationController
-  allow_unauthenticated_access
   def index
     @albums = Album.all
+
+    render json: @albums
   end
 
   def show
     @album = Album.find(params[:id])
+
+    render json: @album
   end
 
   def new
     @album = Album.new
+
+    render json: @album
   end
 
   def create
     @album = Album.new(album_params)
     @album.published_at = Time.current
     if @album.save
-      redirect_to albums_path, notice: "Album created successfully"
+      render json: @album, status: :created
+    else
+      render json: @album.errors, status: :unprocessable_entity
     end
 
     photo_files = photo_params
@@ -27,6 +34,10 @@ class AlbumsController < ApplicationController
           photo.image.attach(photo_file)
         end
       end
+
+      render json: @album, status: :created
+    else
+      render json: @album.errors, status: :unprocessable_entity
     end
   end
 
