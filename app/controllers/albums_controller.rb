@@ -7,8 +7,8 @@ class AlbumsController < ApplicationController
 
   def show
     @album = Album.find(params[:id])
-
-    render json: @album
+    response = get_photos(@album)
+    render json: response
   end
 
   def create
@@ -47,6 +47,16 @@ class AlbumsController < ApplicationController
     def get_cover_image(album)
       album.as_json.merge(
         cover_image_url: album.cover_image.attached? ? url_for(album.cover_image) : nil
+      )
+    end
+
+    def get_photos(album)
+      album.as_json.merge(
+        photos: album.photos.map do |photo|
+          photo.as_json.merge(
+            image_url: photo.image.attached? ? url_for(photo.image) : nil
+          )
+        end
       )
     end
 end
