@@ -14,18 +14,13 @@ class AlbumsController < ApplicationController
   def create
     @album = Album.new(album_params)
     @album.published_at = Time.current
-    if @album.save
-      render json: @album, status: :created
-    else
-      render json: @album.errors, status: :unprocessable_entity
-    end
+    @album.save
 
     photo_files = photo_params
     if photo_files.any?
       ActiveRecord::Base.transaction do
         photo_files.each do |photo_file|
-          photo = @album.photos.create!(image: photo_file)
-          photo.image.attach(photo_file)
+          @album.photos.create!(image: photo_file)
         end
       end
 
