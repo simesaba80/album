@@ -2,7 +2,7 @@ class AlbumsController < ApplicationController
   def index
     @albums = Album.all
 
-    render json: @albums
+    render json: @albums.map { |album| get_cover_image(album) }
   end
 
   def show
@@ -42,5 +42,11 @@ class AlbumsController < ApplicationController
 
     def photo_params
       Array(params.dig(:album, :photo_images))
+    end
+
+    def get_cover_image(album)
+      album.as_json.merge(
+        cover_image_url: album.cover_image.attached? ? url_for(album.cover_image) : nil
+      )
     end
 end
