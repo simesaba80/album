@@ -19,23 +19,18 @@ class AlbumsController < ApplicationController
   end
 
   def create
-    @album = Album.new(album_params)
-    @album.published_at = Time.current
-    if !@album.save
-      return render json: @album.errors, status: :unprocessable_entity
-    end
-
-    photo_files = photo_params
-    if photo_files.any?
-      ActiveRecord::Base.transaction do
-        photo_files.each do |photo_file|
-          if !@album.photos.create!(image: photo_file)
-            return render json: { error: "Failed to create photo" }, status: :unprocessable_entity
-          end
-        end
-      end
-    end
+    @album = Album.create_album(album_params, photo_params)
     render json: get_photos(@album), status: :created
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
+  end
+
+  def destroy
+    @album = Album.find(params[:id])
+    if !@album.destroy
+      raise "Failed to delete album"
+    end
+    render json: { message: "Album deleted successfully" }, status: :ok
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
@@ -49,19 +44,20 @@ class AlbumsController < ApplicationController
       Array(params.dig(:album, :photo_images))
     end
 
-    def get_cover_image(album)
-      album.as_json.merge(
-        cover_image_url: album.cover_image.attached? ? url_for(album.cover_image) : nil
-      )
-    end
 
-    def get_photos(album)
-      album.as_json.merge(
-        photos: album.photos.map do |photo|
-          photo.as_json.merge(
-            image_url: photo.image.attached? ? url_for(photo.image) : nil
-          )
-        end
-      )
-    end
+  def get_cover_image(album)
+    album.as_json.merge(
+      cover_image_url: album.cover_image.attached? ? url_for(album.cover_image) : nil
+    )
+  end
+
+  def get_photos(album)
+    album.as_json.merge(
+      photos: album.photos.map do |photo|
+        photo.as_json.merge(
+          image_url: photo.image.attached? ? url_for(photo.image) : nil
+        )
+      end
+    )
+  end
 end
