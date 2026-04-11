@@ -3,31 +3,41 @@ class AlbumsController < ApplicationController
     @albums = Album.all
 
     render json: @albums.map { |album| get_cover_image(album) }
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
   def show
     @album = Album.find(params[:id])
     response = get_photos(@album)
-    render json: response
+    if response.nil?
+      return render json: { error: "Album not found" }, status: :not_found
+    end
+    render json: response, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
   def create
     @album = Album.new(album_params)
     @album.published_at = Time.current
-    @album.save
+    if !@album.save
+      return render json: @album.errors, status: :unprocessable_entity
+    end
 
     photo_files = photo_params
     if photo_files.any?
       ActiveRecord::Base.transaction do
         photo_files.each do |photo_file|
-          @album.photos.create!(image: photo_file)
+          if !@album.photos.create!(image: photo_file)
+            return render json: { error: "Failed to create photo" }, status: :unprocessable_entity
+          end
         end
       end
-
-      render json: @album, status: :created
-    else
-      render json: @album.errors, status: :unprocessable_entity
     end
+    render json: get_photos(@album), status: :created
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
   private
