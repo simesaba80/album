@@ -14,23 +14,17 @@ class AlbumsController < ApplicationController
       return render json: { error: "Album not found" }, status: :not_found
     end
     render json: response, status: :ok
-  rescue => e
-    render json: { error: e.message }, status: :internal_server_error
   end
 
   def create
     @album = Album.create_album(album_params, photo_params)
     render json: get_photos(@album), status: :created
-  rescue => e
-    render json: { error: e.message }, status: :internal_server_error
   end
 
   def update
     @album = Album.find(params[:id])
-    @album.update(album_params)
+    @album = Album.update_album(@album, album_params, photo_changes_params)
     render json: get_photos(@album), status: :ok
-  rescue => e
-    render json: { error: e.message }, status: :internal_server_error
   end
 
   def destroy
@@ -39,33 +33,40 @@ class AlbumsController < ApplicationController
       raise "Failed to delete album"
     end
     render json: { message: "Album deleted successfully" }, status: :ok
-  rescue => e
-    render json: { error: e.message }, status: :internal_server_error
   end
 
   private
     def album_params
-      params.expect(album: [ :id, :title, :cover_image, :description, :status ])
+      params.expect(album: [ :title, :cover_image, :description, :status ])
     end
 
     def photo_params
       Array(params.dig(:album, :photo_images))
     end
 
+    def photo_changes_params
+      params.permit(
+        photo_changes: [
+          { add: [ :image, :caption, :display_order ] },
+          { update: [ :id, :image, :caption, :display_order ] },
+          { delete_ids: [] }
+        ]
+      ).fetch(:photo_changes, { add: [], update: [], delete_ids: [] })
+    end
 
-  def get_cover_image(album)
-    album.as_json.merge(
-      cover_image_url: album.cover_image.attached? ? url_for(album.cover_image) : nil
-    )
-  end
+    def get_cover_image(album)
+      album.as_json.merge(
+        cover_image_url: album.cover_image.attached? ? url_for(album.cover_image) : nil
+      )
+    end
 
-  def get_photos(album)
-    album.as_json.merge(
-      photos: album.photos.map do |photo|
-        photo.as_json.merge(
-          image_url: photo.image.attached? ? url_for(photo.image) : nil
-        )
-      end
-    )
-  end
+    def get_photos(album)
+      album.as_json.merge(
+        photos: album.photos.map do |photo|
+          photo.as_json.merge(
+            image_url: photo.image.attached? ? url_for(photo.image) : nil
+          )
+        end
+      )
+    end
 end
