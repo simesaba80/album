@@ -23,4 +23,32 @@ class Album < ApplicationRecord
 
     album
   end
+
+  def self.update_album(album_params, photo_params)
+    album = Album.find(album_params[:id])
+    album.update(album_params)
+    if !album.save
+      raise album.errors
+    end
+
+    photo_files = photo_params
+    if photo_files.any?
+      ActiveRecord::Base.transaction do
+        photo_files.each do |photo_file|
+          photo = album.photos.find(photo_file[:id])
+          if photo.nil?
+            photo = album.photos.create!(image: photo_file)
+          else
+            photo.update(image: photo_file)
+            photo.image.attach(photo_file)
+          end
+          if !photo.save
+            raise photo.errors
+          end
+        end
+      end
+    end
+
+    album
+  end
 end
