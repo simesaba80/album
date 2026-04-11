@@ -45,13 +45,29 @@ class AlbumsController < ApplicationController
     end
 
     def photo_changes_params
-      params.permit(
-        photo_changes: [
-          { add: [ :image, :caption, :display_order ] },
-          { update: [ :id, :image, :caption, :display_order ] },
-          { delete_ids: [] }
-        ]
-      ).fetch(:photo_changes, { add: [], update: [], delete_ids: [] })
+      raw = params.fetch(:photo_changes, {})
+      add_rows = Array(raw[:add]&.values).map { |p| p.permit(:image, :caption, :display_order) }
+      update_rows = Array(raw[:update]&.values).map { |p| p.permit(:id, :image, :caption, :display_order) }
+      delete_ids = Array(raw[:delete_ids]&.values)
+
+      {
+        add: add_rows,
+        update: update_rows,
+        delete_ids: delete_ids
+      }
+      # raw = params.expect(:album, :photo_changes)
+
+      # permitted = ActionController::Parameters.new(raw).permit(
+      #   add: [ :image, :caption, :display_order ],
+      #   update: [ :id, :image, :caption, :display_order ],
+      #   delete_ids: []
+      # ).to_h
+
+      # {
+      #   add: Array(permitted["add"]).map(&:to_h),
+      #   update: Array(permitted["update"]).map(&:to_h),
+      #   delete_ids: Array(permitted["delete_ids"])
+      # }
     end
 
     def get_cover_image(album)

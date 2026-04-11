@@ -27,6 +27,9 @@ class Album < ApplicationRecord
   def self.update_album(album, album_params, photo_changes_params)
     ActiveRecord::Base.transaction do
       album.update!(album_params)
+      puts "--------------------------------"
+      puts photo_changes_params
+      puts "--------------------------------"
 
       Array(photo_changes_params[:delete_ids]).each do |photo_id|
         album.photos.find(photo_id).destroy!
@@ -35,7 +38,7 @@ class Album < ApplicationRecord
       Array(photo_changes_params[:add]).each do |photo_change|
         image = photo_change[:image]
         next if image.blank?
-        album.photos.create!(photo_change)
+        album.photos.create!(image: image)
       end
 
       Array(photo_changes_params[:update]).each do |photo_change|
@@ -45,7 +48,7 @@ class Album < ApplicationRecord
         photo.image.attach(photo_change[:image]) if photo_change[:image].present?
         attr = {} # 更新する属性を格納するハッシュ
         attr[:caption] = photo_change[:caption] if photo_change.key?(:caption)
-        attr[:display_order] = photo_change[:display_order] if photo_change[:display_order].present?
+        attr[:display_order] = photo_change[:display_order] if photo_change.key?(:display_order)
         photo.update!(attr) if attr.any?
       end
     end
