@@ -48,7 +48,7 @@ class AlbumsController < ApplicationController
       raw = params.fetch(:photo_changes, {})
       add_rows = Array(raw[:add]&.values).map { |p| p.permit(:image, :caption, :display_order) }
       update_rows = Array(raw[:update]&.values).map { |p| p.permit(:id, :image, :caption, :display_order) }
-      delete_ids = Array(raw[:delete_ids]&.values)
+      delete_ids = Array(raw[:delete_ids])
 
       {
         add: add_rows,
