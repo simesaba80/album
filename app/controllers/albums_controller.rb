@@ -23,7 +23,7 @@ class AlbumsController < ApplicationController
 
   def update
     @album = Album.find(params[:id])
-    @album = Album.update_album(@album, album_params, photo_changes_params)
+    @album = Album.update_album(@album, photos_params)
     render json: get_photos(@album), status: :ok
   end
 
@@ -55,19 +55,16 @@ class AlbumsController < ApplicationController
         update: update_rows,
         delete_ids: delete_ids
       }
-      # raw = params.expect(:album, :photo_changes)
+    end
 
-      # permitted = ActionController::Parameters.new(raw).permit(
-      #   add: [ :image, :caption, :display_order ],
-      #   update: [ :id, :image, :caption, :display_order ],
-      #   delete_ids: []
-      # ).to_h
-
-      # {
-      #   add: Array(permitted["add"]).map(&:to_h),
-      #   update: Array(permitted["update"]).map(&:to_h),
-      #   delete_ids: Array(permitted["delete_ids"])
-      # }
+    def photos_params
+      params.require(:album).permit(
+        :title,
+        :cover_image,
+        :description,
+        :status,
+        photos_attributes: [ :id, :image, :caption, :display_order, :_destroy ]
+      )
     end
 
     def get_cover_image(album)
