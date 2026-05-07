@@ -7,17 +7,13 @@ class Album < ApplicationRecord
   def self.create_album(album_params, photo_params)
     album = Album.new(album_params)
     album.published_at = Time.current
-    if !album.save
-      raise album.errors
-    end
+    album.save!
 
     photo_files = photo_params
     if photo_files.any?
       ActiveRecord::Base.transaction do
         photo_files.each do |photo_file|
-          if !album.photos.create!(image: photo_file)
-            raise album.errors
-          end
+          album.photos.create!(image: photo_file)
         end
       end
     end

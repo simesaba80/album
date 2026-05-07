@@ -29,9 +29,7 @@ class AlbumsController < ApplicationController
 
   def destroy
     @album = Album.find(params[:id])
-    if !@album.destroy
-      raise "Failed to delete album"
-    end
+    @album.destroy!
     render json: { message: "Album deleted successfully" }, status: :ok
   end
 
