@@ -17,7 +17,7 @@ class AlbumsController < ApplicationController
   end
 
   def create
-    @album = Album.create_album(album_params, photo_params)
+    @album = Album.create_album(album_params)
     render json: get_photos(@album), status: :created
   end
 
@@ -29,32 +29,25 @@ class AlbumsController < ApplicationController
 
   def destroy
     @album = Album.find(params[:id])
-    if !@album.destroy
-      raise "Failed to delete album"
-    end
+    @album.destroy!
     render json: { message: "Album deleted successfully" }, status: :ok
   end
 
   private
     def album_params
-      params.expect(album: [ :title, :cover_image, :description, :status ])
+      params.expect(album: [
+        :title,
+        :cover_image,
+        :description,
+        :status,
+        photos_attributes: [ [
+          :id, :image, :caption, :display_order
+        ] ]
+      ])
     end
 
     def photo_params
       Array(params.dig(:album, :photo_images))
-    end
-
-    def photo_changes_params
-      raw = params.fetch(:photo_changes, {})
-      add_rows = Array(raw[:add]&.values).map { |p| p.permit(:image, :caption, :display_order) }
-      update_rows = Array(raw[:update]&.values).map { |p| p.permit(:id, :image, :caption, :display_order) }
-      delete_ids = Array(raw[:delete_ids])
-
-      {
-        add: add_rows,
-        update: update_rows,
-        delete_ids: delete_ids
-      }
     end
 
     def photos_params
