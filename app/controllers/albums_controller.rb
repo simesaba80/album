@@ -17,7 +17,7 @@ class AlbumsController < ApplicationController
   end
 
   def create
-    @album = Album.create_album(album_params, photo_params)
+    @album = Album.create_album(album_params)
     render json: get_photos(@album), status: :created
   end
 
@@ -35,7 +35,15 @@ class AlbumsController < ApplicationController
 
   private
     def album_params
-      params.expect(album: [ :title, :cover_image, :description, :status ])
+      params.expect(album: [
+        :title,
+        :cover_image,
+        :description,
+        :status,
+        photos_attributes: [ [
+          :id, :image, :caption, :display_order
+        ] ]
+      ])
     end
 
     def photo_params

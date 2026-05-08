@@ -4,20 +4,10 @@ class Album < ApplicationRecord
   has_many :photos, dependent: :destroy
   accepts_nested_attributes_for :photos, allow_destroy: true
 
-  def self.create_album(album_params, photo_params)
+  def self.create_album(album_params)
     album = Album.new(album_params)
     album.published_at = Time.current
     album.save!
-
-    photo_files = photo_params
-    if photo_files.any?
-      ActiveRecord::Base.transaction do
-        photo_files.each do |photo_file|
-          album.photos.create!(image: photo_file)
-        end
-      end
-    end
-
     album
   end
 
