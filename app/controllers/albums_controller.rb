@@ -3,8 +3,6 @@ class AlbumsController < ApplicationController
     @albums = Album.all
 
     render json: @albums.map { |album| get_cover_image(album) }
-  rescue => e
-    render json: { error: e.message }, status: :internal_server_error
   end
 
   def show
@@ -17,13 +15,15 @@ class AlbumsController < ApplicationController
   end
 
   def create
-    @album = Album.create_album(album_params)
+    # @album = Album.create_album(album_params)
+    @album = Album.create_album_with_photos(album_payload_params)
     render json: get_photos(@album), status: :created
   end
 
   def update
     @album = Album.find(params[:id])
-    @album = Album.update_album(@album, photos_params)
+    # @album = Album.update_album(@album, photos_params)
+    @album = Album.update_album_with_photos(@album, album_payload_params)
     render json: get_photos(@album), status: :ok
   end
 
@@ -73,6 +73,31 @@ class AlbumsController < ApplicationController
             image_url: photo.image.attached? ? url_for(photo.image) : nil
           )
         end
+      )
+    end
+
+    def album_payload_params
+      params.permit(
+        album: [
+          :title,
+          :cover_image,
+          :description,
+          :status
+        ],
+        photos: {
+          create: [
+            :image,
+            :caption,
+            :display_order
+          ],
+          update: [
+            :id,
+            :image,
+            :caption,
+            :display_order
+          ],
+          destroy: [ :id ]
+        }
       )
     end
 end
