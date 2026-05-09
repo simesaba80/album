@@ -1,7 +1,7 @@
 class Album < ApplicationRecord
   enum :status, { draft: 0, public_album: 1, private_album: 2 }
   has_one_attached :cover_image
-  has_many :photos, dependent: :destroy
+  has_many :photos, -> { order(display_order: :desc) }, dependent: :destroy
   accepts_nested_attributes_for :photos, allow_destroy: true
 
   def self.create_album(album_params)
