@@ -75,22 +75,30 @@ Rails 標準の HTTP Basic 認証を使う。追加 gem は不要。
 
 ## Frontend Integration
 
-ブラウザに Basic 認証のID/パスワードを置かない。
+ブラウザに Basic 認証ダイアログを出したい場合は、ブラウザがアクセスする Next.js 側で Basic 認証チャレンジを返す。
 
-Next.js 側に Route Handler または API proxy を作り、ブラウザは Next.js にだけアクセスする。Next.js サーバーが Rails API に `Authorization: Basic ...` を付けて転送する。
+Next.js 側に Route Handler または API proxy を作り、ブラウザは Next.js にだけアクセスする。Next.js は固定の認証情報を付与せず、ブラウザから届いた `Authorization` ヘッダーを Rails API に転送する。
 
 例:
 
-- Browser -> `GET /api/albums`
-- Next.js server -> `GET {RAILS_API_URL}/albums` with `Authorization: Basic ...`
+- Browser -> `GET /api/auth/basic`
+- Next.js server -> `401 Unauthorized` with `WWW-Authenticate: Basic ...`
+- Browser -> Basic 認証ダイアログでID/パスワード入力
+- Browser -> `GET /api/auth/basic` with `Authorization: Basic ...`
+- Next.js server -> `GET {RAILS_API_URL}/albums` with browser `Authorization`
+- Rails -> 認証成功なら `200`
+- Next.js server -> Basic 認証トークンを httpOnly cookie に保存
+- Next.js server -> returnTo に redirect
+- Browser -> `GET /api/albums` with cookie
+- Next.js server -> cookie から `Authorization: Basic ...` を復元して Rails へ転送
 
 Next.js 側の環境変数:
 
 - `RAILS_API_URL`
-- `RAILS_BASIC_AUTH_USERNAME`
-- `RAILS_BASIC_AUTH_PASSWORD`
 
-`NEXT_PUBLIC_` prefix は付けない。ブラウザに公開されるため。
+`RAILS_BASIC_AUTH_USERNAME` / `RAILS_BASIC_AUTH_PASSWORD` は Next.js 側には置かない。認証可否は Rails API のレスポンスで判断する。
+
+Basic 認証はブラウザが認証情報をキャッシュするため、ログアウトは扱いづらい。この構成では Next.js が httpOnly cookie を消せば proxy 経由の認証状態は消せるが、ブラウザ側の Basic 認証キャッシュまで確実に破棄できるわけではない。明示的なログイン・ログアウト体験が必要な場合は Cookie セッション認証を選ぶ。
 
 ## Route And UI Changes
 

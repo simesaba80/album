@@ -14,10 +14,29 @@ module BasicAuthentication
 
   private
     def authenticate_with_basic_auth
-      authenticate_or_request_with_http_basic do |username, password|
-        secure_compare(username, ENV.fetch("BASIC_AUTH_USERNAME")) &&
-          secure_compare(password, ENV.fetch("BASIC_AUTH_PASSWORD"))
+      expected_username = basic_auth_username
+      expected_password = basic_auth_password
+
+      if expected_username.blank? || expected_password.blank?
+        Rails.logger.error("Basic authentication credentials are not configured")
+        return render json: { error: "Basic authentication is not configured" },
+          status: :internal_server_error
       end
+
+      authenticate_or_request_with_http_basic do |username, password|
+        secure_compare(username, expected_username) &&
+          secure_compare(password, expected_password)
+      end
+    end
+
+    def basic_auth_username
+      ENV["BASIC_AUTH_USERNAME"].presence ||
+        Rails.application.credentials.dig(:basic_auth, :username)
+    end
+
+    def basic_auth_password
+      ENV["BASIC_AUTH_PASSWORD"].presence ||
+        Rails.application.credentials.dig(:basic_auth, :password)
     end
 
     def secure_compare(value, expected)
